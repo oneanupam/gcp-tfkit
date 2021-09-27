@@ -1,0 +1,28 @@
+# Resource block to deploy zonal persistant disk
+resource "google_compute_disk" "dev_vm01_data_pd01" {
+  project = var.project_id
+
+  name        = "${var.gce_name}-data-disk-01"
+  description = "Zonal Persistant Disk"
+
+  zone = var.resource_zone
+  type = "pd-standard"
+  size = 10
+
+  labels = var.resource_labels
+}
+
+# Resource block to attach persistant disk with compute instance
+resource "google_compute_attached_disk" "dev_vm01_data_pd01_attachment" {
+  project = var.project_id
+
+  zone     = var.resource_zone
+  instance = google_compute_instance.dev_vm01.id
+  disk     = google_compute_disk.dev_vm01_data_pd01.id
+  mode     = "READ_WRITE" # You may use, "READ_ONLY" as well, if needed.
+}
+
+# Resource specific policy
+output "dev_vm01_data_pd01_selflink" {
+  value = google_compute_disk.dev_vm01_data_pd01.self_link
+}

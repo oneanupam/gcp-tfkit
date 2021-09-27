@@ -1,0 +1,204 @@
+# Resource block to deploy notification channel
+resource "google_monitoring_notification_channel" "fdv_dev_nt_channel01" {
+  display_name = "fdv-dev-notification-channel01"
+  type         = "email"
+  labels = {
+    email_address = "anupamyadav0224@gmail.com"
+  }
+}
+
+# Resource block to deploy monitoring group
+resource "google_monitoring_group" "fdv_dev_monitoringgroup01" {
+  display_name = "fdv-dev-monitoringgroup01"
+  filter       = "resource.type = \"gce_instance\" AND metadata.system_labels.name = starts_with(\"${google_compute_instance.dev_vm01.name}\")"
+}
+
+# Resource block to deploy alert policy
+resource "google_monitoring_alert_policy" "fdn_dev_alert_policy01" {
+  display_name = "cpu-alert-policy"
+  combiner     = "OR"
+  conditions {
+    display_name = "CPU Utilization is more than 60%."
+    condition_threshold {
+      filter          = "metric.type=\"compute.googleapis.com/instance/cpu/utilization\" AND resource.type=\"gce_instance\""
+      duration        = "60s"
+      comparison      = "COMPARISON_GT"
+      threshold_value = 0.6
+      trigger {
+        count = 1
+      }
+    }
+  }
+  notification_channels = [google_monitoring_notification_channel.fdv_dev_nt_channel01.id]
+}
+
+resource "google_monitoring_alert_policy" "fdn_dev_alert_policy02" {
+  display_name = "httpd-alert-policy"
+  combiner     = "OR"
+  conditions {
+    display_name = "Httpd server is not running."
+    condition_threshold {
+      filter          = "select_process_count(\"has_substring(\\\"httpd\\\")\", \"root\") AND resource.type=\"gce_instance\""
+      comparison      = "COMPARISON_LT"
+      threshold_value = 1
+      duration        = "60s"
+    }
+  }
+  notification_channels = [google_monitoring_notification_channel.fdv_dev_nt_channel01.id]
+}
+
+resource "google_monitoring_dashboard" "fdn_dev_dashboard" {
+  dashboard_json = <<EOF
+{
+  "displayName": "Test Dashboard",
+  "mosaicLayout": {
+    "columns": 12,
+    "tiles": [
+      {
+        "height": 2,
+        "width": 4,
+        "xPos": 1,
+        "yPos": 5,
+        "widget": {
+          "title": "VM Instance - CPU utilization [MEAN]",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "minAlignmentPeriod": "60s",
+                "plotType": "LINE",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "apiSource": "DEFAULT_CLOUD",
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "60s",
+                      "crossSeriesReducer": "REDUCE_NONE",
+                      "perSeriesAligner": "ALIGN_MEAN"
+                    },
+                    "filter": "metric.type=\"compute.googleapis.com/instance/cpu/utilization\" resource.type=\"gce_instance\"",
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "60s",
+                      "crossSeriesReducer": "REDUCE_NONE",
+                      "perSeriesAligner": "ALIGN_NONE"
+                    }
+                  }
+                }
+              }
+            ],
+            "thresholds": [],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        }
+      },
+      {
+        "height": 4,
+        "width": 4,
+        "xPos": 1,
+        "yPos": 5,
+        "widget": {
+          "title": "VM Instance - Memory usage [MEAN]",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "minAlignmentPeriod": "60s",
+                "plotType": "LINE",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "apiSource": "DEFAULT_CLOUD",
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "60s",
+                      "crossSeriesReducer": "REDUCE_NONE",
+                      "perSeriesAligner": "ALIGN_MEAN"
+                    },
+                    "filter": "metric.type=\"agent.googleapis.com/memory/bytes_used\" resource.type=\"gce_instance\"",
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "60s",
+                      "crossSeriesReducer": "REDUCE_NONE",
+                      "perSeriesAligner": "ALIGN_NONE"
+                    }
+                  }
+                }
+              }
+            ],
+            "thresholds": [],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        }
+      }
+    ]
+  }
+}
+
+EOF
+}
+
+/*
+# Resource block to create uptime check
+resource "google_monitoring_uptime_check_config" "fdn_dev_uptime_check_http" {
+  display_name = "http-uptime-check"
+  period       = "60s"
+  timeout      = "10s"
+  # selected_regions = ["", "", ""]
+
+  http_check {
+    path = "/"
+    port = "80"
+  }
+
+  monitored_resource {
+    type = "uptime_url"
+    labels = {
+      project_id = var.project_id
+      host       = google_compute_address.dev_vm01_eip.address
+    }
+  }
+}
+
+locals {
+  uptime_check_id_temp_value  = split("-", "${google_monitoring_uptime_check_config.fdn_dev_uptime_check_http.uptime_check_id}")
+  uptime_check_id_final_value = join("-", slice(local.uptime_check_id_temp_value, 0, 3))
+}
+
+resource "google_monitoring_alert_policy" "fdn_dev_uptime_check_http_alert_policy" {
+  display_name = "http-uptime-check failure policy"
+  combiner     = "OR"
+  conditions {
+    display_name = "Failure of uptime check_id ${local.uptime_check_id_final_value}"
+    condition_threshold {
+      filter          = "resource.type = \"uptime_url\" AND metric.type = \"monitoring.googleapis.com/uptime_check/check_passed\" AND metric.labels.check_id = \"${local.uptime_check_id_final_value}\""
+      duration        = "60s"
+      comparison      = "COMPARISON_GT"
+      threshold_value = 1
+      trigger {
+        count = 1
+      }
+      
+      aggregations {
+        alignmentPeriod = "1200s"
+        crossSeriesReducer = "REDUCE_COUNT_FALSE"
+        groupByFields = ["resource.label.*"]
+        perSeriesAligner = "ALIGN_NEXT_OLDER"
+      }
+      
+    }
+  }
+  notification_channels = [google_monitoring_notification_channel.fdv_dev_nt_channel01.id]
+
+  depends_on = [google_monitoring_uptime_check_config.fdn_dev_uptime_check_http]
+}
+*/

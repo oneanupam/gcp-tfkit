@@ -1,0 +1,23 @@
+# Resource block to deploy Cloud Router for NAT GW
+# Note: You must create the Cloud Router in the same region as the instances that use Cloud NAT.
+resource "google_compute_router" "dev_nat_router01" {
+  project = var.project_id
+
+  name    = "dev-nat-router01"
+  network = google_compute_network.dev_vpc01.id
+  region  = var.resource_region
+}
+
+# Resource block to deploy Cloud Router for VPN GW
+resource "google_compute_router" "dev_vpn_router01" {
+  project = var.project_id
+
+  name    = "dev-vpn-router01"
+  region  = var.resource_region
+  network = google_compute_network.dev_vpc01.id
+
+  bgp {
+    asn            = 65001
+    advertise_mode = "DEFAULT"
+  }
+}

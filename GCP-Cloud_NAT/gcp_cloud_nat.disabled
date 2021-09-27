@@ -1,0 +1,24 @@
+# Resource block to deploy NAT Gateway
+# Note: Cloud NAT uses Cloud Router only to group NAT configuration information (control plane). 
+# Cloud NAT does not direct a Cloud Router to use BGP or to add routes. NAT traffic does not pass 
+# through a Cloud Router (data plane).
+
+# Note: Create the Cloud NAT in the same region as the instances that use Cloud NAT.
+resource "google_compute_router_nat" "dev_nat01" {
+  project = var.project_id
+
+  name = "dev-nat01"
+  # The name of the Cloud Router in which this NAT will be configured.
+  router = google_compute_router.dev_nat_router01.name
+  region = google_compute_router.dev_nat_router01.region
+
+  nat_ip_allocate_option = "MANUAL_ONLY"
+  # NAT_IPs require a list of IP addresses.
+  nat_ips = google_compute_address.dev_nat01_eip.*.self_link
+
+  source_subnetwork_ip_ranges_to_nat = "LIST_OF_SUBNETWORKS"
+  subnetwork {
+    name                    = google_compute_subnetwork.dev_vpc01_subnet01.id
+    source_ip_ranges_to_nat = ["ALL_IP_RANGES"]
+  }
+}

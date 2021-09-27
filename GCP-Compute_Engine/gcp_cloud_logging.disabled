@@ -1,0 +1,30 @@
+# A Logging bucket to store logs in
+resource "google_logging_project_bucket_config" "fdn_dev_loggingbucket01" {
+    project    = var.project_id
+    location  = "global"
+    retention_days = 90
+    bucket_id = "fdn-dev-loggingbucket01"
+}
+
+# A Storage bucket to store logs in
+resource "google_storage_bucket" "fdn_dev_storagebucket01" {
+  name = "fdn-dev-storagebucket01"
+}
+
+# Our sink; this logs all activity related to our "my-logged-instance" instance
+resource "google_logging_project_sink" "fdn_dev_sink01" {
+  name        = "fdn-dev-sink01"
+  destination = "storage.googleapis.com/${google_storage_bucket.fdn_dev_storagebucket01.name}"
+  filter      = "resource.type = gce_instance AND resource.labels.instance_id = \"${google_compute_instance.dev_vm01.instance_id}\""
+
+  unique_writer_identity = true
+}
+
+# Because our sink uses a unique_writer, we must grant that writer access to the bucket.
+resource "google_project_iam_binding" "fdn_dev_logwriter_binding" {
+  role = "roles/storage.objectCreator"
+
+  members = [
+    google_logging_project_sink.fdn_dev_sink01.writer_identity,
+  ]
+}

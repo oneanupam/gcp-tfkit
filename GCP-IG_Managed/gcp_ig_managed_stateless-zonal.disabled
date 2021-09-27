@@ -1,0 +1,67 @@
+# Resource block to deploy zonal MIG
+resource "google_compute_instance_group_manager" "dev_mig_zonal" {
+  project = var.project_id
+
+  name               = var.zmig_name
+  zone               = var.resource_zone
+  base_instance_name = "${var.zmig_name}-compute"
+
+  version {
+    name              = var.it_version
+    instance_template = google_compute_instance_template.dev_instance_template.id
+  }
+
+  wait_for_instances = true
+  # target_size        = 2 # Don't set, If this resource is attached to an autoscaler.
+
+  # target_pools = [google_compute_target_pool.appserver.id]
+  named_port {
+    name = "http"
+    port = 80
+  }
+
+  update_policy {
+    type                    = "PROACTIVE"
+    minimal_action          = "REPLACE"
+    max_surge_fixed         = 4
+    max_surge_percent       = null
+    max_unavailable_fixed   = 2
+    max_unavailable_percent = null
+    min_ready_sec           = 30
+    replacement_method      = "SUBSTITUTE"
+  }
+
+  auto_healing_policies {
+    health_check      = google_compute_health_check.dev_health_check_global.id
+    initial_delay_sec = 300
+  }
+
+  lifecycle {
+    create_before_destroy = true
+    # ignore_changes        = [update_policy]
+  }
+
+  timeouts {
+    create = "15m"
+    update = "15m"
+    delete = "15m"
+  }
+}
+
+# Resource block to create and associate an zonal autoscaler with MIG
+resource "google_compute_autoscaler" "dev_mig_autoscaler_zonal" {
+  name   = "${var.zmig_name}-autoscaler"
+  zone   = var.resource_zone
+  target = google_compute_instance_group_manager.dev_mig_zonal.id
+
+  autoscaling_policy {
+    mode            = "ON"
+    max_replicas    = 2
+    min_replicas    = 1
+    cooldown_period = 60
+
+    cpu_utilization {
+      target = 0.7
+    }
+  }
+}
