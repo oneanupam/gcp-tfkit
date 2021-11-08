@@ -19,6 +19,20 @@ vpc01_subnets_cidr = ["10.0.1.0/24", "10.0.5.0/24"]
 gce_name         = "fdn-dev-vm"
 gce_machine_type = "n1-standard-1"
 
+compute_engine = {
+  vm_01 = {
+    gce_name = "fdn-dev-vm-01"
+    gce_zone = "us-central1-a"
+  }
+  vm_02 = {
+    gce_name = "fdn-dev-vm-02"
+    gce_zone = "us-central1-b"
+  }
+}
+
+it_name    = "fdn-dev-it"
+it_version = "v100"
+
 create_image = true
 dev_machine_image = {
   name        = "fdn-dev-mi-01"

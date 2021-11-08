@@ -21,6 +21,12 @@ variable "vpc01_subnets_cidr" {}
 variable "gce_name" {}
 variable "gce_machine_type" {}
 
+variable "compute_engine" {
+  type = map(any)
+}
+variable "it_name" {}
+variable "it_version" {}
+
 variable "create_image" {
   type = bool
 }
