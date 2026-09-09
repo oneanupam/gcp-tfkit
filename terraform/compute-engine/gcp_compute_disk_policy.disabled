@@ -22,7 +22,7 @@ resource "google_compute_resource_policy" "dev_disk_snapshot_schedule_policy" {
   }
 }
 
-# Resource block to associate existing resource policie to a zonal disk. 
+# Resource block to associate existing resource policie to a zonal disk.
 resource "google_compute_disk_resource_policy_attachment" "dev_disk_snapshot_schedule_policy_attachment" {
   project = var.project_id
 

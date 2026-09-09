@@ -88,4 +88,3 @@ resource "google_compute_instance" "dev_gce" {
 output "dev_gce_selflinks" {
   value = google_compute_instance.dev_gce[*].self_link
 }
-

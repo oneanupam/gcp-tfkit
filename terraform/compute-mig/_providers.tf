@@ -1,4 +1,4 @@
-# Provider block to configure GCP Provider 
+# Provider block to configure GCP Provider
 provider "google" {
   project = var.project_id
   region  = var.resource_region

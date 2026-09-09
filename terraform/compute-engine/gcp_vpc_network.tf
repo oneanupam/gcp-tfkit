@@ -14,4 +14,3 @@ resource "google_compute_network" "dev_vpc01" {
 output "dev_vpc01_id" {
   value = google_compute_network.dev_vpc01.id
 }
-

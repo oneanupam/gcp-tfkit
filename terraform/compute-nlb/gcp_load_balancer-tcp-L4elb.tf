@@ -1,5 +1,5 @@
 /*
-Google Cloud Platform (GCP) Network Load Balancers distributes traffic among VM instances 
+Google Cloud Platform (GCP) Network Load Balancers distributes traffic among VM instances
 in the same region in a VPC network.
 */
 

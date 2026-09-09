@@ -60,7 +60,7 @@ resource "google_compute_instance_template" "dev_instance_template" {
     access_config {
       # nat_ip       = google_compute_address.dev_vm_01_eip.address
     }
-  }  
+  }
 
   tags           = ["web", "linux"]
   can_ip_forward = false

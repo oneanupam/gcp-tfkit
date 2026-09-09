@@ -8,4 +8,3 @@ resource "google_compute_instance_from_template" "dev_vm" {
 
   source_instance_template = google_compute_instance_template.dev_instance_template.id
 }
-
