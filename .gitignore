@@ -29,4 +29,17 @@ override.tf.json
 *tfplan*
 
 # Credential files
-**/.json/*
+/credentials/*.json
+/credentials/*.json*
+
+# Exception for backend.conf file
+!/tf-standard_backends/backend.conf.
+
+# Exception for terraform.lock.hcl file, which is used to lock provider versions (recommended to be checked in)
+.terraform.lock.hcl
+
+
+_site/*
+Gemfile.lock
+**/_site/*
+**/.sass-cache/*
