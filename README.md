@@ -59,5 +59,22 @@ For multiple environment provisioning, use different tfstate files in backend. T
 -   [Optional] `terraform destroy -target="resource_type.resource_name"`
     -   The terraform destroy command is used to destory the resources defined in your Terraform configuration. To delete the specific resource, use the "target" option with destroy command.
 
+## Run pre-commit
+Run the below commnad from the git repo root to set up the git hook scripts into your git hooks. It will be installed at .git/hooks/pre-commit
+
+```bash
+pre-commit install
+```
+
+now pre-commit will run automatically on git commit. Usually, it runs only for the changed files. Its good to run the hooks against all the files when adding new hooks. To manually run all pre-commit hooks on a repo, use below -
+
+```bash
+# to run hooks on all files
+pre-commit run --all-files
+
+# to run individual hook
+pre-commit run <hook_id>
+```
+
 ## References
 > https://github.com/GoogleCloudPlatform/solutions-terraform-cloudbuild-gitops
