@@ -12,17 +12,17 @@ resource "google_compute_forwarding_rule" "dev_l4ilb_tcp_forwarding_rule" {
   name    = "dev-l4ilb-tcp-forwarding-rule"
   region  = var.resource_region
   network = google_compute_network.dev_vpc01.id
-  # The subnetwork that the load balanced IP should belong to for this Forwarding Rule. 
+  # The subnetwork that the load balanced IP should belong to for this Forwarding Rule.
   # This field is only used for INTERNAL load balancing.
   subnetwork = google_compute_subnetwork.dev_vpc01_subnet01.id
 
   ip_protocol           = "TCP"
   ports                 = ["80"]
   load_balancing_scheme = "INTERNAL"
-  # For regional forwarding rules, the address must live in the same region as the forwarding rule. 
-  # If you don't specify a reserved IP address, an ephemeral IP address is assigned. 
+  # For regional forwarding rules, the address must live in the same region as the forwarding rule.
+  # If you don't specify a reserved IP address, an ephemeral IP address is assigned.
   ip_address = google_compute_address.dev_l4ilb_iip.address
-  # If true, clients can access ILB from all regions. Otherwise only allows from the local 
+  # If true, clients can access ILB from all regions. Otherwise only allows from the local
   # region the ILB is located at.
   allow_global_access = false
 

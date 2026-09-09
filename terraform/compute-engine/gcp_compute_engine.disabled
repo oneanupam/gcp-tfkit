@@ -99,4 +99,3 @@ output "dev_vm01_id" {
 output "dev_vm01_instance_id" {
   value = google_compute_instance.dev_vm01.instance_id
 }
-

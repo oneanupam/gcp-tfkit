@@ -85,4 +85,3 @@ resource "google_compute_instance" "dev_gce01" {
 
   # resource_policies = ["google_compute_resource_policy.dev_instance_schedule_policy.self_link"]
 }
-

@@ -15,7 +15,7 @@ resource "google_compute_forwarding_rule" "dev_l7ilb_http_forwarding_rule" {
   name       = "dev-l7ilb-http-forwarding-rule"
   region     = var.resource_region
   network    = google_compute_network.dev_vpc01.id
-  # The subnetwork that the load balanced IP should belong to for this Forwarding Rule. 
+  # The subnetwork that the load balanced IP should belong to for this Forwarding Rule.
   # This field is only used for INTERNAL load balancing.
   subnetwork = google_compute_subnetwork.dev_vpc01_subnet01.id
 

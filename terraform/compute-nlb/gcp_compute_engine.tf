@@ -13,7 +13,7 @@ resource "google_compute_instance" "dev_gce01" {
   name                      = var.gce_name
   zone                      = var.resource_zone
   machine_type              = var.gce_machine_type
-  
+
   # If true, allows Terraform to stop the instance to update its properties.
   allow_stopping_for_update = true
 
@@ -85,4 +85,3 @@ resource "google_compute_instance" "dev_gce01" {
 
   # resource_policies = ["google_compute_resource_policy.dev_instance_schedule_policy.self_link"]
 }
-

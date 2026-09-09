@@ -187,14 +187,14 @@ resource "google_monitoring_alert_policy" "fdn_dev_uptime_check_http_alert_polic
       trigger {
         count = 1
       }
-      
+
       aggregations {
         alignmentPeriod = "1200s"
         crossSeriesReducer = "REDUCE_COUNT_FALSE"
         groupByFields = ["resource.label.*"]
         perSeriesAligner = "ALIGN_NEXT_OLDER"
       }
-      
+
     }
   }
   notification_channels = [google_monitoring_notification_channel.fdv_dev_nt_channel01.id]
