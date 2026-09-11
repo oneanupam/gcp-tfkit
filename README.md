@@ -1,4 +1,4 @@
-# Terraform Code Sets
+# GCP TfKit
 This repository contains Terraform code for Individual Resource deployment on Google Public Cloud.
 
 ## Prerequisites
