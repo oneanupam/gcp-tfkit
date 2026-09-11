@@ -12,8 +12,12 @@ git config --global user.name "Your Name" # To save your name globally for git.
 git config --global user.email "your.work@company.com" # To save the user email in global config.
 git config --list # displays all active Git configuration properties and their assigned values across your system.
 git config --list --global # displays all active global Git configuration properties.
+git config alias.st status # Add an alias for a command
 
 # 2. Core Git Workflow
+git init # Start versioning a new repo.
+git clone <url> # Clone an existing repo.
+
 git add . # Stages all changes in the current directory and its subdirectories (new, modified, and deleted files). It is a quick blanket command to prepare everything at once.
 git add <file01> <file02> # Stages only the specific files you list.
 
@@ -97,11 +101,16 @@ git reset --mixed <commit-id> # Give the last commit you want to keep.
 # (Default) Moves the history back. It keeps all your changes but unstages them.
 git reset --hard <commit-id> # Give the last commit you want to keep.
 # Dangerous. Destroys the commits and completely wipes out all your uncommitted code. Your project will look exactly as it did at that specific past moment.
+
+## Important Files
+# Local git config: .git/config
+# Global git config: ~/.gitconfig
+# List of files to ignore: .gitignore
 ```
 
 ## 📌 How to Contribute
 Feel free to fork this repo and add your favorite git commands!
 
 ## References
-- https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands
-- https://kubernetes.io/docs/reference/kubectl/#resource-types
+- https://git-scm.com/cheat-sheet
+- https://www.atlassian.com/git/tutorials/atlassian-git-cheatsheet
